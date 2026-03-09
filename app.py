@@ -915,6 +915,126 @@ df_display["Quadrante"] = df_display["Quadrante"].apply(_badge)
 df_display = df_display.sort_values("RS-Ratio", ascending=False).reset_index(drop=True)
 st.markdown(df_display.to_html(escape=False, index=False), unsafe_allow_html=True)
 
+# ── Download tabella come JPG ──
+def _render_table_jpg(df_src: pd.DataFrame) -> bytes:
+    """Renderizza df_tbl come immagine JPG con PIL."""
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+    except ImportError:
+        return None
+
+    df_clean = df_src.sort_values("RS-Ratio", ascending=False).reset_index(drop=True)
+
+    COLS     = list(df_clean.columns)
+    COL_W    = [340, 90, 80, 110, 100, 110, 100]
+    ROW_H    = 38
+    HEAD_H   = 44
+    PAD_X    = 18
+    PAD_TOP  = 20
+    PAD_BOT  = 20
+
+    total_w  = sum(COL_W) + PAD_X * 2
+    total_h  = HEAD_H + ROW_H * len(df_clean) + PAD_TOP + PAD_BOT
+
+    # Colori
+    BG          = (248, 250, 255)
+    HEADER_BG   = (240, 246, 255)
+    ROW_ALT     = (244, 248, 255)
+    TEXT_MAIN   = (30, 58, 95)
+    TEXT_HEAD   = (107, 140, 196)
+    BORDER      = (219, 190, 254)
+    BORDER_L    = (219, 234, 254)
+
+    Q_COLORS = {
+        "leading":   ((5,  150, 105), (209, 250, 229)),
+        "weakening": ((180, 83,  9),  (254, 243, 199)),
+        "lagging":   ((220, 38,  38), (254, 226, 226)),
+        "improving": ((29,  78, 216), (219, 234, 254)),
+    }
+
+    img  = Image.new("RGB", (total_w, total_h), BG)
+    draw = ImageDraw.Draw(img)
+
+    # Tenta font di sistema, fallback a default
+    try:
+        font_head = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 11)
+        font_body = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 11)
+        font_badge = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 10)
+    except Exception:
+        font_head  = ImageFont.load_default()
+        font_body  = font_head
+        font_badge = font_head
+
+    def draw_text_centered(text, x, y, w, h, font, color):
+        bbox = draw.textbbox((0, 0), text, font=font)
+        tw = bbox[2] - bbox[0]
+        th = bbox[3] - bbox[1]
+        draw.text((x + (w - tw) // 2, y + (h - th) // 2), text, font=font, fill=color)
+
+    def draw_text_left(text, x, y, h, font, color):
+        bbox = draw.textbbox((0, 0), text, font=font)
+        th = bbox[3] - bbox[1]
+        draw.text((x, y + (h - th) // 2), text, font=font, fill=color)
+
+    # Header
+    draw.rectangle([0, PAD_TOP, total_w, PAD_TOP + HEAD_H], fill=HEADER_BG)
+    draw.line([0, PAD_TOP + HEAD_H, total_w, PAD_TOP + HEAD_H], fill=BORDER_L, width=1)
+
+    cx = PAD_X
+    for ci, col in enumerate(COLS):
+        label = col.upper()
+        draw_text_centered(label, cx, PAD_TOP, COL_W[ci], HEAD_H, font_head, TEXT_HEAD)
+        cx += COL_W[ci]
+
+    # Rows
+    for ri, row in df_clean.iterrows():
+        ry = PAD_TOP + HEAD_H + ri * ROW_H
+        row_bg = BG if ri % 2 == 0 else ROW_ALT
+        draw.rectangle([0, ry, total_w, ry + ROW_H], fill=row_bg)
+        draw.line([0, ry + ROW_H, total_w, ry + ROW_H], fill=BORDER_L, width=1)
+
+        cx = PAD_X
+        for ci, col in enumerate(COLS):
+            val = str(row[col])
+            cw  = COL_W[ci]
+
+            if col == "Quadrante":
+                qkey = val.lower()
+                if qkey in Q_COLORS:
+                    fg, bg_q = Q_COLORS[qkey]
+                    # Badge pill
+                    bw = draw.textbbox((0,0), val, font=font_badge)[2] + 16
+                    bh = 20
+                    bx = cx + (cw - bw) // 2
+                    by = ry + (ROW_H - bh) // 2
+                    draw.rounded_rectangle([bx, by, bx+bw, by+bh], radius=10, fill=bg_q, outline=fg)
+                    draw_text_centered(val.upper(), bx, by, bw, bh, font_badge, fg)
+                else:
+                    draw_text_centered(val, cx, ry, cw, ROW_H, font_body, TEXT_MAIN)
+            elif ci == 0:
+                draw_text_left(val, cx, ry, ROW_H, font_body, TEXT_MAIN)
+            else:
+                draw_text_centered(val, cx, ry, cw, ROW_H, font_body, TEXT_MAIN)
+
+            cx += cw
+
+    # Border esterno
+    draw.rectangle([0, PAD_TOP, total_w - 1, total_h - PAD_BOT], outline=BORDER_L, width=1)
+
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG", quality=95)
+    return buf.getvalue()
+
+_tbl_jpg = _render_table_jpg(df_tbl)
+if _tbl_jpg:
+    st.download_button(
+        label="⬇ Scarica tabella (.jpg)",
+        data=_tbl_jpg,
+        file_name="rrg_risultati.jpg",
+        mime="image/jpeg",
+        use_container_width=False,
+    )
+
 
 st.markdown("---")
 st.markdown('<div class="section-label">06 - DATI INTERMEDI E DEBUG</div>', unsafe_allow_html=True)
