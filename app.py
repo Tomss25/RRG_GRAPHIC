@@ -484,6 +484,7 @@ def build_rrg_figure(
     show_trails: bool = True,
     trail_length: int = 8,
     show_vectors: bool = True,
+    show_labels: bool = True,
     dark_mode: bool = True,
 ) -> go.Figure:
     fig = go.Figure()
@@ -555,11 +556,14 @@ def build_rrg_figure(
             ys = [float(mom[t])   for t in trail_idx]
             n  = len(xs)
 
+            # Colore trail: qcolor con label, colore individuale senza
+            trail_base = qcolor if show_labels else color
+
             for j in range(n - 1):
                 alpha = 0.07 + 0.50 * (j / max(n - 2, 1))
-                r_hex = int(qcolor[1:3], 16)
-                g_hex = int(qcolor[3:5], 16)
-                b_hex = int(qcolor[5:7], 16)
+                r_hex = int(trail_base[1:3], 16)
+                g_hex = int(trail_base[3:5], 16)
+                b_hex = int(trail_base[5:7], 16)
                 rgba  = f"rgba({r_hex},{g_hex},{b_hex},{alpha:.2f})"
                 sz    = 2.5 + 2.0 * (j / max(n - 2, 1))
                 fig.add_trace(go.Scatter(
@@ -578,8 +582,11 @@ def build_rrg_figure(
                     xref="x", yref="y", axref="x", ayref="y",
                     showarrow=True, arrowhead=2,
                     arrowsize=1.2, arrowwidth=2.0,
-                    arrowcolor=qcolor,
+                    arrowcolor=trail_base,
                 )
+
+        # Con label ON usa il colore del quadrante; con label OFF usa colore individuale fisso
+        dot_color = qcolor if show_labels else color
 
         hover_lines = [
             f"<b>{name}</b>",
@@ -591,16 +598,16 @@ def build_rrg_figure(
 
         fig.add_trace(go.Scatter(
             x=[rx_val], y=[ry_val],
-            mode="markers+text",
+            mode="markers+text" if show_labels else "markers",
             name=name,
             marker=dict(
                 size=16,
-                color=qcolor,
+                color=dot_color,
                 line=dict(color="#FFFFFF", width=2.5),
             ),
-            text=[f"<b>{name}</b>"],
+            text=[f"<b>{name}</b>"] if show_labels else None,
             textposition="top right",
-            textfont=dict(size=11, color=qcolor, family="DM Sans"),
+            textfont=dict(size=11, color=dot_color, family="DM Sans"),
             hovertemplate="<br>".join(hover_lines) + "<extra></extra>",
             legendgroup=name,
         ))
@@ -717,6 +724,7 @@ with st.sidebar:
     show_trails  = st.toggle("Scie storiche", value=True)
     trail_len    = st.slider("Lunghezza scia", 2, 24, 8)
     show_vectors = st.toggle("Vettori direzionali", value=True)
+    show_labels  = st.toggle("Nomi asset", value=True)
 
     st.markdown("---")
     st.markdown("**Frequenza dati**")
@@ -890,6 +898,7 @@ fig = build_rrg_figure(
     show_trails=show_trails,
     trail_length=trail_len,
     show_vectors=show_vectors,
+    show_labels=show_labels,
     dark_mode=dark_mode,
 )
 st.plotly_chart(fig, use_container_width=True)
