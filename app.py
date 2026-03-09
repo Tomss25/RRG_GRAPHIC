@@ -431,11 +431,26 @@ def parse_file(uploaded) -> pd.DataFrame:
 
 
 def resample_prices(df: pd.DataFrame, freq: str) -> pd.DataFrame:
+    """
+    Resample preservando la data REALE dell ultima osservazione nel bucket.
+    Pandas allinea l indice alla fine del bucket (W-FRI = venerdi SUCCESSIVO),
+    causando date future (es. 20/03 invece di 08/03).
+    Fix: rimappa ogni bucket con l ultima data originale effettivamente presente.
+    """
     freq_map = {"Daily": None, "Weekly": "W-FRI", "Monthly": "ME"}
     rule = freq_map.get(freq)
     if not rule:
         return df
-    return df.resample(rule).last().dropna(how="all")
+
+    df_resampled = df.resample(rule).last().dropna(how="all")
+
+    # Per ogni bucket pandas, trova l ultima data REALE del dataframe originale
+    real_last_dates = pd.Series(df.index, index=df.index).resample(rule).last()
+    df_resampled.index = pd.DatetimeIndex([
+        real_last_dates[bl] if bl in real_last_dates.index else bl
+        for bl in df_resampled.index
+    ])
+    return df_resampled
 
 
 # ═══════════════════════════════════════════════════════
