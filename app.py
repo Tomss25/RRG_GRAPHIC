@@ -531,20 +531,69 @@ def build_rrg_figure(
         fig.add_shape(type="line", **shape_kw,
                       line=dict(color=cross_c, width=1.5, dash="dot"))
 
+    # ── Raccoglie posizioni per anti-overlap label ──
+    # Stima larghezza/altezza di ogni label in unità dati
+    point_data = []
     for i, (name, v) in enumerate(results.items()):
-        color = SECTOR_COLORS[i % len(SECTOR_COLORS)]
         ratio = v["rs_ratio"]
         mom   = v["rs_momentum"]
-
         valid = ratio.notna() & mom.notna()
         if not valid.any():
             continue
-
         last_idx = valid[::-1].idxmax()
-        rx_val   = float(ratio[last_idx])
-        ry_val   = float(mom[last_idx])
-        qd       = get_quadrant(rx_val, ry_val)
-        qcolor   = QUADRANT_STYLE[qd]["color"]
+        point_data.append((i, name, v, float(ratio[last_idx]), float(mom[last_idx]), last_idx))
+
+    # Calcola offset label senza sovrapposizioni
+    # Le posizioni candidate ruotano attorno al punto
+    POSITIONS = [
+        "top right", "top left", "bottom right", "bottom left",
+        "top center", "bottom center", "middle right", "middle left",
+    ]
+    # Offset in unità dati approssimative per ogni posizione
+    x_range = xmax - xmin
+    y_range = ymax - ymin
+    char_w  = x_range * 0.018   # larghezza stimata per carattere
+    row_h   = y_range * 0.065   # altezza riga label
+
+    def label_bbox(rx, ry, name, pos):
+        """Restituisce (x0, y0, x1, y1) del bbox del label in unità dati."""
+        lw = len(name) * char_w
+        lh = row_h
+        if "right"  in pos: lx = rx + x_range * 0.01
+        elif "left" in pos: lx = rx - lw - x_range * 0.01
+        else:               lx = rx - lw / 2
+        if "top"    in pos: ly = ry + y_range * 0.015
+        elif "bottom" in pos: ly = ry - lh - y_range * 0.015
+        else:               ly = ry - lh / 2
+        return (lx, ly, lx + lw, ly + lh)
+
+    def bboxes_overlap(a, b):
+        return not (a[2] < b[0] or b[2] < a[0] or a[3] < b[1] or b[3] < a[1])
+
+    # Assegna posizione ottimale a ogni label
+    assigned = {}   # name -> (textposition, bbox)
+    for i, name, v, rx_val, ry_val, last_idx in point_data:
+        best_pos  = "top right"
+        best_bbox = label_bbox(rx_val, ry_val, name, "top right")
+        min_overlaps = 999
+        for pos in POSITIONS:
+            bb = label_bbox(rx_val, ry_val, name, pos)
+            overlaps = sum(1 for _, ab in assigned.values() if bboxes_overlap(bb, ab))
+            if overlaps < min_overlaps:
+                min_overlaps = overlaps
+                best_pos  = pos
+                best_bbox = bb
+            if overlaps == 0:
+                break
+        assigned[name] = (best_pos, best_bbox)
+
+    for i, name, v, rx_val, ry_val, last_idx in point_data:
+        color  = SECTOR_COLORS[i % len(SECTOR_COLORS)]
+        ratio  = v["rs_ratio"]
+        mom    = v["rs_momentum"]
+        valid  = ratio.notna() & mom.notna()
+        qd     = get_quadrant(rx_val, ry_val)
+        qcolor = QUADRANT_STYLE[qd]["color"]
 
         if show_trails:
             valid_idx = valid[valid].index.tolist()
@@ -556,7 +605,6 @@ def build_rrg_figure(
             ys = [float(mom[t])   for t in trail_idx]
             n  = len(xs)
 
-            # Colore trail: qcolor con label, colore individuale senza
             trail_base = qcolor if show_labels else color
 
             for j in range(n - 1):
@@ -585,8 +633,8 @@ def build_rrg_figure(
                     arrowcolor=trail_base,
                 )
 
-        # Con label ON usa il colore del quadrante; con label OFF usa colore individuale fisso
-        dot_color = qcolor if show_labels else color
+        dot_color  = qcolor if show_labels else color
+        label_pos, _ = assigned.get(name, ("top right", None))
 
         hover_lines = [
             f"<b>{name}</b>",
@@ -606,7 +654,7 @@ def build_rrg_figure(
                 line=dict(color="#FFFFFF", width=2.5),
             ),
             text=[f"<b>{name}</b>"] if show_labels else None,
-            textposition="top right",
+            textposition=label_pos,
             textfont=dict(size=11, color=dot_color, family="DM Sans"),
             hovertemplate="<br>".join(hover_lines) + "<extra></extra>",
             legendgroup=name,
