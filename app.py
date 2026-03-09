@@ -42,29 +42,30 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
 
-html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
+html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; background: #F0F4FA; }
 
 .rrg-header {
-    background: linear-gradient(135deg, #050E1D 60%, #0A1A35);
-    border: 1px solid rgba(59,130,246,0.15);
+    background: linear-gradient(135deg, #0F2A56 60%, #1A3A72);
+    border: 1px solid rgba(255,255,255,0.12);
     padding: 28px 36px 24px;
     border-radius: 18px;
     margin-bottom: 28px;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 4px 24px rgba(15,42,86,0.18);
 }
 .rrg-header::before {
     content: '';
     position: absolute;
     top: -60px; right: -60px;
     width: 260px; height: 260px;
-    background: radial-gradient(circle, rgba(59,130,246,0.10) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(147,197,253,0.12) 0%, transparent 70%);
     border-radius: 50%;
 }
 .rrg-header-tag {
     font-family: 'DM Mono', monospace;
     font-size: 10px;
-    color: #3B82F6;
+    color: #93C5FD;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     margin-bottom: 8px;
@@ -73,12 +74,12 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
     font-family: 'Syne', sans-serif;
     font-size: 28px;
     font-weight: 800;
-    color: #F0F4FF;
+    color: #FFFFFF;
     margin: 0 0 6px;
     letter-spacing: -0.6px;
 }
 .rrg-header p {
-    color: rgba(180,195,230,0.45);
+    color: rgba(186,214,254,0.6);
     font-size: 12px;
     margin: 0;
     font-weight: 300;
@@ -93,15 +94,16 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
     margin-bottom: 24px;
 }
 .metric-card {
-    background: #080F1E;
-    border: 1px solid rgba(255,255,255,0.06);
+    background: #FFFFFF;
+    border: 1px solid #DBEAFE;
     border-radius: 12px;
     padding: 16px 18px;
+    box-shadow: 0 1px 6px rgba(15,42,86,0.07);
 }
 .metric-card .mc-label {
     font-family: 'DM Mono', monospace;
     font-size: 9px;
-    color: rgba(140,160,200,0.5);
+    color: #6B8CC4;
     text-transform: uppercase;
     letter-spacing: 0.14em;
     margin-bottom: 8px;
@@ -110,12 +112,12 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
     font-family: 'Syne', sans-serif;
     font-size: 24px;
     font-weight: 700;
-    color: #E8EFFF;
+    color: #0F2A56;
     line-height: 1;
 }
 .metric-card .mc-sub {
     font-size: 10px;
-    color: rgba(140,160,200,0.4);
+    color: #8AAAD4;
     margin-top: 4px;
     font-family: 'DM Mono', monospace;
 }
@@ -123,26 +125,26 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
 .section-label {
     font-family: 'DM Mono', monospace;
     font-size: 9px;
-    color: rgba(59,130,246,0.6);
+    color: #3B82F6;
     text-transform: uppercase;
     letter-spacing: 0.2em;
     margin-bottom: 10px;
     padding-bottom: 6px;
-    border-bottom: 1px solid rgba(59,130,246,0.1);
+    border-bottom: 1px solid #DBEAFE;
 }
 
 .formula-box {
-    background: #060D1A;
-    border: 1px solid rgba(255,255,255,0.06);
-    border-left: 3px solid rgba(59,130,246,0.4);
+    background: #F8FAFF;
+    border: 1px solid #DBEAFE;
+    border-left: 3px solid #3B82F6;
     border-radius: 10px;
     padding: 16px 18px;
     font-family: 'DM Mono', monospace;
     font-size: 11px;
-    color: rgba(180,200,240,0.65);
+    color: #334E7A;
     line-height: 1.9;
 }
-.formula-box b { color: rgba(180,200,240,0.9); }
+.formula-box b { color: #0F2A56; }
 
 .q-badge {
     display: inline-block;
@@ -154,30 +156,31 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
-.q-leading   { background: rgba(16,185,129,0.12); color: #10B981; border: 1px solid rgba(16,185,129,0.2); }
-.q-weakening { background: rgba(245,158,11,0.12); color: #F59E0B; border: 1px solid rgba(245,158,11,0.2); }
-.q-lagging   { background: rgba(239,68,68,0.12);  color: #EF4444; border: 1px solid rgba(239,68,68,0.2); }
-.q-improving { background: rgba(59,130,246,0.12); color: #3B82F6; border: 1px solid rgba(59,130,246,0.2); }
+.q-leading   { background: rgba(16,185,129,0.10); color: #059669; border: 1px solid rgba(16,185,129,0.25); }
+.q-weakening { background: rgba(217,119,6,0.10);  color: #B45309; border: 1px solid rgba(217,119,6,0.25); }
+.q-lagging   { background: rgba(220,38,38,0.10);  color: #DC2626; border: 1px solid rgba(220,38,38,0.25); }
+.q-improving { background: rgba(37,99,235,0.10);  color: #1D4ED8; border: 1px solid rgba(37,99,235,0.25); }
 
 table { width: 100%; border-collapse: collapse; font-size: 12px; background: transparent; }
 th {
     font-family: 'DM Mono', monospace;
     font-size: 9px;
-    color: rgba(140,160,200,0.5);
+    color: #6B8CC4;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     padding: 10px 14px;
     text-align: left;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid #DBEAFE;
+    background: #F0F6FF;
 }
 td {
     padding: 9px 14px;
-    color: rgba(220,235,255,0.75);
-    border-bottom: 1px solid rgba(255,255,255,0.03);
+    color: #1E3A5F;
+    border-bottom: 1px solid #EEF4FF;
     font-family: 'DM Mono', monospace;
     font-size: 11px;
 }
-tr:hover td { background: rgba(59,130,246,0.04); }
+tr:hover td { background: #EFF6FF; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -446,10 +449,10 @@ SECTOR_COLORS = [
 ]
 
 QUADRANT_STYLE = {
-    "leading":   {"color": "#10B981", "bg": "rgba(16,185,129,0.055)", "label": "LEADING"},
-    "weakening": {"color": "#F59E0B", "bg": "rgba(245,158,11,0.055)", "label": "WEAKENING"},
-    "lagging":   {"color": "#EF4444", "bg": "rgba(239,68,68,0.055)",  "label": "LAGGING"},
-    "improving": {"color": "#3B82F6", "bg": "rgba(59,130,246,0.055)", "label": "IMPROVING"},
+    "leading":   {"color": "#059669", "bg": "rgba(16,185,129,0.07)",  "label": "LEADING"},
+    "weakening": {"color": "#B45309", "bg": "rgba(217,119,6,0.07)",   "label": "WEAKENING"},
+    "lagging":   {"color": "#DC2626", "bg": "rgba(220,38,38,0.07)",   "label": "LAGGING"},
+    "improving": {"color": "#1D4ED8", "bg": "rgba(37,99,235,0.07)",   "label": "IMPROVING"},
 }
 
 
@@ -485,11 +488,11 @@ def build_rrg_figure(
     xmin, xmax = min(all_x) - padx, max(all_x) + padx
     ymin, ymax = min(all_y) - pady, max(all_y) + pady
 
-    bg_paper = "#050E1D" if dark_mode else "#FFFFFF"
-    bg_plot  = "#070F1F" if dark_mode else "#F8FAFD"
-    cross_c  = "rgba(180,200,240,0.12)" if dark_mode else "rgba(10,22,40,0.15)"
-    tick_c   = "#304060" if dark_mode else "#8A9BBE"
-    axis_c   = "#253550" if dark_mode else "#4A5A7A"
+    bg_paper = "#F0F4FA" if not dark_mode else "#0D1F3C"
+    bg_plot  = "#F8FAFF" if not dark_mode else "#0F2444"
+    cross_c  = "rgba(15,42,86,0.13)" if not dark_mode else "rgba(147,197,253,0.18)"
+    tick_c   = "#7A9CC4" if not dark_mode else "#5B82B8"
+    axis_c   = "#2C4F85" if not dark_mode else "#7BAEE8"
 
     quads = [
         ("leading",   100,  xmax, 100,  ymax,  xmax - padx * 0.25, ymax - pady * 0.35),
@@ -578,7 +581,7 @@ def build_rrg_figure(
             marker=dict(
                 size=16,
                 color=qcolor,
-                line=dict(color=bg_paper, width=2.5),
+                line=dict(color="#FFFFFF", width=2.5),
             ),
             text=[f"<b>{name}</b>"],
             textposition="top right",
@@ -595,7 +598,7 @@ def build_rrg_figure(
         xaxis=dict(
             title=dict(text="RS-Ratio  ->  Forza Relativa",
                        font=dict(size=11, color=axis_c)),
-            gridcolor="rgba(180,200,240,0.05)" if dark_mode else "rgba(10,22,40,0.06)",
+            gridcolor="rgba(15,42,86,0.07)" if not dark_mode else "rgba(180,200,240,0.07)",
             tickfont=dict(family="DM Mono", size=9, color=tick_c),
             zeroline=False,
             range=[_sf(xmin), _sf(xmax)],
@@ -603,7 +606,7 @@ def build_rrg_figure(
         yaxis=dict(
             title=dict(text="RS-Momentum  ^  Velocita",
                        font=dict(size=11, color=axis_c)),
-            gridcolor="rgba(180,200,240,0.05)" if dark_mode else "rgba(10,22,40,0.06)",
+            gridcolor="rgba(15,42,86,0.07)" if not dark_mode else "rgba(180,200,240,0.07)",
             tickfont=dict(family="DM Mono", size=9, color=tick_c),
             zeroline=False,
             range=[_sf(ymin), _sf(ymax)],
@@ -613,14 +616,14 @@ def build_rrg_figure(
             yanchor="bottom", y=1.01,
             xanchor="left", x=0,
             font=dict(size=10, family="DM Sans"),
-            bgcolor="rgba(5,14,29,0.75)" if dark_mode else "rgba(255,255,255,0.85)",
-            bordercolor="rgba(255,255,255,0.07)" if dark_mode else "#E4EAF4",
+            bgcolor="rgba(240,244,250,0.92)" if not dark_mode else "rgba(13,31,60,0.85)",
+            bordercolor="#DBEAFE" if not dark_mode else "rgba(255,255,255,0.07)",
             borderwidth=1,
         ),
         hoverlabel=dict(
-            bgcolor="#050E1D" if dark_mode else "#0A1628",
-            font=dict(color="#C8D8F0", family="DM Mono", size=11),
-            bordercolor="rgba(59,130,246,0.35)",
+            bgcolor="#0F2A56" if not dark_mode else "#0D1F3C",
+            font=dict(color="#DBEAFE", family="DM Mono", size=11),
+            bordercolor="rgba(59,130,246,0.5)",
         ),
         height=660,
     )
@@ -695,7 +698,7 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown("**Visualizzazione**")
-    dark_mode    = st.toggle("Tema scuro", value=True)
+    dark_mode    = st.toggle("Tema scuro", value=False)
     show_trails  = st.toggle("Scie storiche", value=True)
     trail_len    = st.slider("Lunghezza scia", 2, 24, 8)
     show_vectors = st.toggle("Vettori direzionali", value=True)
@@ -707,7 +710,7 @@ with st.sidebar:
     st.markdown("---")
     jdk_active = "JdK" in method
     st.markdown(f"""
-    <div style="font-size:10px; color:rgba(140,160,200,0.4); font-family:monospace; line-height:2.0;">
+    <div style="font-size:10px; color:#8AAAD4; font-family:monospace; line-height:2.0;">
     {"JdK_Calcoli ATTIVO" if jdk_active else "RS_Calcoli ATTIVO"}<br>
     RS_raw = Settore / Benchmark<br>
     EMA{ema_short} seed=SMA{ema_short}<br>
@@ -843,7 +846,7 @@ st.markdown(f"""
   </div>
   <div class="metric-card">
     <div class="mc-label">Warm-up consumato</div>
-    <div class="mc-value" style="color:#8B5CF6">{warmup_rows}</div>
+    <div class="mc-value" style="color:#2563EB">{warmup_rows}</div>
     <div class="mc-sub">utili: {usable_rows} barre</div>
   </div>
   <div class="metric-card">
@@ -853,12 +856,12 @@ st.markdown(f"""
   </div>
   <div class="metric-card">
     <div class="mc-label">Leading + Improving</div>
-    <div class="mc-value" style="color:#10B981">{n_leading + n_improving}</div>
+    <div class="mc-value" style="color:#059669">{n_leading + n_improving}</div>
     <div class="mc-sub">L:{n_leading} · I:{n_improving}</div>
   </div>
   <div class="metric-card">
     <div class="mc-label">Lagging + Weakening</div>
-    <div class="mc-value" style="color:#EF4444">{n_lagging + n_weakening}</div>
+    <div class="mc-value" style="color:#DC2626">{n_lagging + n_weakening}</div>
     <div class="mc-sub">Lag:{n_lagging} · W:{n_weakening}</div>
   </div>
 </div>
